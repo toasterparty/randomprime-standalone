@@ -114,6 +114,7 @@ def build_patch_config(patcher_json: Path, app: AppConfig) -> dict:
     cache.mkdir(parents=True, exist_ok=True)
     preferences = {
         "skipSplashScreens": app.skip_splash_screens,
+        "quickplay": app.quickplay,
         "cacheDir": str(cache),
     }
     config.setdefault("preferences", {}).update(preferences)
