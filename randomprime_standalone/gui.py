@@ -106,6 +106,7 @@ class App:
             ("Skip splash screens", "skip_splash_screens"),
             ("Skip main menu", "quickplay"),
             ("Dolphin quickplay after patching", "launch_dolphin"),
+            ("Validate input ISO", "validate_iso"),
         )
         for index, (label, name) in enumerate(checks):
             ttk.Checkbutton(preferences, text=label, variable=self.variables[name]).grid(
@@ -175,6 +176,9 @@ class App:
             return
         self.patching = True
         self._refresh_patch_button(config)
+        if not config.validate_iso:
+            self._start_patch_worker(config)
+            return
         self._set_progress(0.0, "Verifying input ISO...")
         threading.Thread(target=self._checksum_worker, args=(config,), daemon=True).start()
 
@@ -200,6 +204,9 @@ class App:
                 self._set_progress(0.0, "Canceled.")
                 self._finish(None, "Canceled.")
                 return
+        self._start_patch_worker(config)
+
+    def _start_patch_worker(self, config: AppConfig) -> None:
         self._set_progress(0.0, "Patching...")
         threading.Thread(target=self._patch_worker, args=(config,), daemon=True).start()
 

@@ -22,6 +22,7 @@ class AppConfig:
     output_dir: str = ""
     dolphin_path: str = ""
     launch_dolphin: bool = False
+    validate_iso: bool = True
 
     skip_splash_screens: bool = False
     no_hud: bool = False
