@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "randomprime-standalone"
+version = "0.0.2"
+description = "Standalone GUI for applying randomprime patcher JSON to a Metroid Prime ISO"
+requires-python = ">=3.13"
+dependencies = [
+    "py-randomprime>=1.31.3",
+]
+
+[project.scripts]
+randomprime = "randomprime_standalone.__main__:main"
+
+[dependency-groups]
+dev = [
+    "click>=8.2",
+    "nuitka>=4.1",
+    "zstandard>=0.23",
+    "patchelf>=0.17; sys_platform == 'linux'",
+]
+
+[tool.setuptools.packages.find]
+include = ["randomprime_standalone*"]
+
+[tool.setuptools.package-data]
+randomprime_standalone = ["assets/*"]
