@@ -1,26 +1,25 @@
-.PHONY: install run upgrade release clean
+.PHONY: install run test upgrade release publish clean
 .DEFAULT_GOAL := run
 
-ICON_DIR := randomprime_standalone/assets
 ifeq ($(OS),Windows_NT)
-    SHELL := C:/Program Files/Git/bin/bash.exe
-    ASSET := randomprime-standalone.exe
-    NUITKA_OS_FLAGS := --windows-console-mode=disable --windows-icon-from-ico=$(ICON_DIR)/icon.ico
-else ifeq ($(shell uname -s),Darwin)
-    SHELL := bash
-    ASSET := randomprime-standalone-macos
-    NUITKA_OS_FLAGS := --macos-app-icon=$(ICON_DIR)/icon.png
+    # tools/find-bash.ps1 locates Git bash via the registry PATH, so it is found
+    # even in a terminal opened before install-bash.ps1 ran (no restart needed).
+    # Guard via BASH (not SHELL): make refuses to leave SHELL empty, so an empty
+    # result would silently fall back to cmd.exe instead of failing loudly here.
+    BASH := $(shell powershell -NoProfile -File tools/find-bash.ps1)
+    ifeq ($(BASH),)
+        $(error Could not locate Git bash - run tools/install-bash.ps1 (open a new terminal if you just installed it))
+    endif
+    SHELL := $(BASH)
 else
     SHELL := bash
-    ASSET := randomprime-standalone-linux
-    NUITKA_OS_FLAGS := --linux-icon=$(ICON_DIR)/icon.png
 endif
-
 .SHELLFLAGS := -euo pipefail -c
-export PATH := $(HOME)/.local/bin:$(PATH)
-export UV_PROJECT_ENVIRONMENT := build/.venv
-export PYTHONPYCACHEPREFIX := build/pycache
-UV := uv self update -q && uv
+
+# install.sh puts uv on PATH; here we only keep its venv and bytecode cache
+# inside build/ without exporting those globally.
+UV_ENV := UV_PROJECT_ENVIRONMENT=build/.venv PYTHONPYCACHEPREFIX=build/pycache
+UV := $(UV_ENV) uv
 UV_RUN := $(UV) run --locked
 
 install:
@@ -29,21 +28,18 @@ install:
 run: install
 	@$(UV_RUN) randomprime
 
+test: install
+	@$(UV_RUN) pytest
+
 upgrade: install
 	@$(UV) lock --upgrade
 
 release: install
-	@$(UV) run --locked --no-editable python -m nuitka \
-		--onefile \
-		--python-flag=-m \
-		--enable-plugin=tk-inter \
-		--assume-yes-for-downloads \
-		--output-dir=build/dist \
-		--output-filename=$(ASSET) \
-		--include-distribution-metadata=randomprime-standalone \
-		--include-package-data=randomprime_standalone \
-		$(NUITKA_OS_FLAGS) \
-		randomprime_standalone
+	@$(UV_ENV) tools/release.sh
+
+publish: install
+	@$(UV_ENV) uv build --out-dir build/pypi
+	@$(UV_ENV) uv publish build/pypi/*
 
 clean:
 	@rm -rf build

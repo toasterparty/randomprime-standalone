@@ -1,7 +1,5 @@
 .claude/
 build/
-
-# Fallbacks if a tool is run outside `make` (which redirects these into build/)
 .venv/
 dist/
 __pycache__/

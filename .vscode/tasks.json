@@ -12,9 +12,10 @@
             "problemMatcher": []
         },
         {
-            "label": "install",
+            "label": "test",
             "type": "shell",
-            "command": "make install",
+            "command": "make test",
+            "group": "test",
             "problemMatcher": []
         },
         {

@@ -2,31 +2,31 @@
 
 Desktop app that applies a [randomprime](https://github.com/randovania/randomprime) patcher JSON (for example, one exported by [Randovania](https://randovania.org/)) to a vanilla Metroid Prime ISO.
 
-- Overrides in-game options (screen, audio, HUD, controls) and cosmetics (map state, Fusion suit, HUD color, suit hue rotations)
-- Optional cheats: start with all items, custom starting room, instakill, low gravity
-- Verifies the input ISO against known good dumps before patching
-- Optionally launches Dolphin with the patched ISO
+## Usage
 
-## Install
-
-Download the build for your OS from [Releases](../../releases). On Windows, just run the exe. On Linux/macOS, mark it executable first (`chmod +x`).
+Download the archive for your OS from [Releases](../../releases) and extract it. On Windows, run the exe. On Linux/macOS, mark it executable first (`chmod +x`).
 
 ## Development
 
-Requirements: git and GNU make (uv and Python are bootstrapped automatically).
+***Do NOT read past this line unless you are a contributor.***
+
+On Windows, run this once to install Git bash and GNU make and add bash to your PATH:
 
 ```powershell
-winget install --id Git.Git -e --source winget
-winget install --id ezwinports.make -e --source winget
+./tools/install-bash.ps1
 ```
+
+On Linux/macOS, confirm `make` is installed (it usually is).
 
 | Command | Description |
 | ------- | ----------- |
 | `make run` | Run the app from source |
-| `make release` | Build the platform executable into `dist/` |
+| `make test` | Run unit tests (`test/`) |
 | `make upgrade` | Upgrade locked dependencies |
+| `make release` | Build the standalone executable into `build/dist/` |
+| `make publish` | Build and publish the PyPI package (CI only) |
 | `make clean` | Delete the venv and build outputs |
 
 ## Releasing
 
-Run the `Release` workflow from the GitHub Actions tab, choosing a major/minor/patch version bump. It bumps the version, tags the commit, builds Windows/Linux/macOS executables, and publishes a GitHub release with the assets attached.
+Dispatch the `Release` workflow from the GitHub Actions tab.

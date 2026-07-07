@@ -4,29 +4,26 @@ import threading
 import tkinter as tk
 import traceback
 from collections.abc import Callable
-from importlib import metadata
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
 import py_randomprime
 
-from . import dialogs
+from . import VERSION, dialogs
 from .config import AppConfig, from_mapping, load_config, save_config
 from .patcher import KNOWN_ISO_SHA1S, build_patch_config, launch_dolphin, output_iso_path, sha1_of
 
 __all__ = ["App"]
 
 _ABOUT = (
-    "Applies a randomprime patcher JSON to a vanilla Metroid Prime ISO."
+    "Utility for generating patched Metroid Prime (GC) ISOs from a"
+    f"Randomprime v{py_randomprime.__version__} JSON patcher file."
 )
 _PAD = {"padx": 4, "pady": 4}
 
 
 def _version_suffix() -> str:
-    try:
-        return " v" + metadata.version("randomprime-standalone")
-    except metadata.PackageNotFoundError:
-        return ""
+    return " v" + VERSION if VERSION else ""
 
 
 class App:

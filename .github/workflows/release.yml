@@ -16,7 +16,15 @@ permissions:
   contents: write
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+      - run: make test
+
   version:
+    needs: test
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.bump.outputs.version }}
@@ -26,51 +34,87 @@ jobs:
       - name: Bump version
         id: bump
         run: echo "version=$(uv version --bump ${{ inputs.bump }} --short)" >> "$GITHUB_OUTPUT"
-      - name: Commit and tag
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -am "Release v${{ steps.bump.outputs.version }}"
-          git tag "v${{ steps.bump.outputs.version }}"
-          git push origin HEAD "v${{ steps.bump.outputs.version }}"
+      - run: uv lock
+      - uses: actions/upload-artifact@v7
+        with:
+          name: version-files
+          path: |
+            pyproject.toml
+            uv.lock
+          if-no-files-found: error
 
   build:
     needs: version
+    # Release toggle: standalone executables. Set to false to disable for this repo.
+    if: true
     strategy:
       matrix:
         include:
           - os: windows-latest
-            asset: randomprime-standalone.exe
+            platform: windows
           - os: ubuntu-latest
-            asset: randomprime-standalone-linux
+            platform: linux
           - os: macos-latest
-            asset: randomprime-standalone-macos
+            platform: macos
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7
-        with:
-          ref: v${{ needs.version.outputs.version }}
-      - uses: astral-sh/setup-uv@v7
-      - name: Install make
-        if: runner.os == 'Windows'
-        run: choco install make -y
-      - run: make release
-      - uses: actions/upload-artifact@v7
-        with:
-          name: ${{ matrix.asset }}
-          path: build/dist/${{ matrix.asset }}
-          if-no-files-found: error
-
-  release:
-    needs: [version, build]
-    runs-on: ubuntu-latest
-    steps:
       - uses: actions/download-artifact@v8
         with:
+          name: version-files
+      - uses: astral-sh/setup-uv@v7
+      # On Windows, bootstrap Git bash + GNU make the same way a local dev does,
+      # then build in the same shell so the freshly installed make is on PATH.
+      - name: Build release
+        shell: pwsh
+        run: |
+          if ($IsWindows) { ./tools/install-bash.ps1 }
+          make release
+      - uses: actions/upload-artifact@v7
+        with:
+          name: archive-${{ matrix.platform }}
+          path: build/*.zip
+          if-no-files-found: error
+
+  pypi:
+    needs: version
+    # Release toggle: PyPI package. Set to true (and configure trusted publishing) to enable.
+    if: false
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: version-files
+      - uses: astral-sh/setup-uv@v7
+      - run: make publish
+
+  publish:
+    needs: [version, build, pypi]
+    if: always() && needs.version.result == 'success' && needs.build.result != 'failure' && needs.pypi.result != 'failure'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: version-files
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: archive-*
           merge-multiple: true
           path: dist
+        continue-on-error: true
+      - name: Commit, tag, and atomic push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Release v${{ needs.version.outputs.version }}"
+          git tag "v${{ needs.version.outputs.version }}"
+          git push --atomic origin HEAD "v${{ needs.version.outputs.version }}"
       - uses: softprops/action-gh-release@v3
         with:
           tag_name: v${{ needs.version.outputs.version }}
           generate_release_notes: true
-          files: dist/*
+          files: dist/*.zip

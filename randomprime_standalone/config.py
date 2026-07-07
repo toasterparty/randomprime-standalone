@@ -6,6 +6,8 @@ import sys
 from collections.abc import Mapping
 from pathlib import Path
 
+from . import DIST_NAME
+
 __all__ = ["AppConfig", "SoundMode", "cache_dir", "from_mapping", "load_config", "save_config"]
 
 
@@ -69,7 +71,7 @@ def _app_dir() -> Path:
         base = Path.home() / "Library" / "Application Support"
     else:
         base = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config"))
-    return base / "randomprime-standalone"
+    return base / DIST_NAME
 
 
 def _config_path() -> Path:

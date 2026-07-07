@@ -1,14 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-command -v uv >/dev/null 2>&1 && exit 0
+export PATH="$HOME/.local/bin:$PATH"
 
 case "$(uname -s)" in
   MINGW*|MSYS*|CYGWIN*)
-    powershell.exe -NoProfile -ExecutionPolicy ByPass -Command \
-      "irm https://astral.sh/uv/install.ps1 | iex"
+    # Keep Git bash + GNU make installed and current (winget-managed).
+    powershell -NoProfile -ExecutionPolicy Bypass -File tools/install-bash.ps1
+    command -v uv >/dev/null 2>&1 ||
+      powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://astral.sh/uv/install.ps1 | iex"
     ;;
   *)
-    curl -LsSf https://astral.sh/uv/install.sh | sh
+    command -v uv >/dev/null 2>&1 ||
+      curl -LsSf https://astral.sh/uv/install.sh | sh
     ;;
 esac
+
+uv self update -q
