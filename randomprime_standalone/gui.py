@@ -141,7 +141,7 @@ class App:
     def _browse_patcher_json(self) -> None:
         path = filedialog.askopenfilename(
             title="Select Patcher JSON",
-            filetypes=[("JSON files", "*.json"), ("All files", "*.*")],
+            filetypes=[("JSON files", "*.json *.jsonc"), ("All files", "*.*")],
         )
         if path:
             self.variables["patcher_json"].set(path)
@@ -211,15 +211,17 @@ class App:
         threading.Thread(target=self._patch_worker, args=(config,), daemon=True).start()
 
     def _patch_worker(self, config: AppConfig) -> None:
-        output_iso = output_iso_path(config)
+        output_iso = None
         try:
             patch_config = build_patch_config(Path(config.patcher_json), config)
+            output_iso = output_iso_path(config.output_dir, patch_config)
             output_iso.parent.mkdir(parents=True, exist_ok=True)
             notifier = py_randomprime.ProgressNotifier(self._post_progress)
             py_randomprime.patch_iso(Path(config.input_iso), output_iso, patch_config, notifier)
         except Exception:
-            with contextlib.suppress(OSError):
-                output_iso.unlink(missing_ok=True)
+            if output_iso is not None:
+                with contextlib.suppress(OSError):
+                    output_iso.unlink(missing_ok=True)
             self.root.after(0, self._finish, traceback.format_exc(), "")
             return
         self.root.after(0, self._on_patch_done, config, output_iso)

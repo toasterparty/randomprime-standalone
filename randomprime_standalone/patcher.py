@@ -70,8 +70,10 @@ def sha1_of(path: Path, on_progress: Callable[[float], None]) -> str:
     return digest.hexdigest()
 
 
-def output_iso_path(config: AppConfig) -> Path:
-    return Path(config.output_dir) / (Path(config.patcher_json).stem + ".iso")
+def output_iso_path(output_dir: str, patch_config: dict) -> Path:
+    output_iso = patch_config.get("outputIso")
+    filename = Path(output_iso).name if output_iso else "primeOut.iso"
+    return Path(output_dir) / filename
 
 
 def _default_game_options(app: AppConfig) -> dict:
