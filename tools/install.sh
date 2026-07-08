@@ -16,4 +16,4 @@ case "$(uname -s)" in
     ;;
 esac
 
-uv self update -q
+uv self update -q || true
