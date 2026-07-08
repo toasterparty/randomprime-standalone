@@ -5,6 +5,18 @@ dist_name="$(sed -n 's/^name = "\(.*\)"/\1/p' pyproject.toml)"
 module="${dist_name//-/_}"
 icons="$module/assets"
 
+zip_file() {
+    local output_zip="$1"
+    local input_file="$2"
+
+    uv run --no-sync python -c "
+import zipfile, os, sys
+zipfile.ZipFile(sys.argv[1], 'w', zipfile.ZIP_DEFLATED).write(
+    sys.argv[2], arcname=os.path.basename(sys.argv[2])
+)
+" "$output_zip" "$input_file"
+}
+
 case "$(uname -s)" in
   MINGW*|MSYS*|CYGWIN*)
     os_flags=(--windows-console-mode=disable "--windows-icon-from-ico=$icons/icon.ico")
@@ -35,4 +47,4 @@ uv run --locked --no-editable python -m nuitka \
   "${os_flags[@]}" \
   "$module"
 
-zip -j "build/$dist_name-$platform.zip" "build/dist/$output"
+zip_file "build/$dist_name-$platform.zip" "build/dist/$output"
