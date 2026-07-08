@@ -23,6 +23,7 @@ dev = [
     "patchelf; sys_platform == 'linux'",
     "pytest",
     "pytest-xdist",
+    "imageio",
 ]
 
 [tool.pytest.ini_options]
