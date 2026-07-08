@@ -17,7 +17,7 @@ __all__ = ["App"]
 
 _ABOUT = (
     "Utility for generating patched Metroid Prime (GC) ISOs from a"
-    f"Randomprime v{py_randomprime.__version__} JSON patcher file."
+    f" Randomprime v{py_randomprime.__version__} JSON patcher file."
 )
 _PAD = {"padx": 4, "pady": 4}
 

@@ -1,6 +1,10 @@
-# Randomprime Standalone
+# Randomprime Standalone App
 
-Desktop app that applies a [randomprime](https://github.com/randovania/randomprime) patcher JSON (for example, one exported by [Randovania](https://randovania.org/)) to a vanilla Metroid Prime ISO.
+![ui](./doc/img/ui.png)
+
+Desktop app that applies a [Randomprime](https://github.com/randovania/randomprime) patcher JSON (for example, one exported by [Randovania](https://randovania.org/)) to a vanilla Metroid Prime ISO.
+
+Configuration persists between app runs.
 
 ## Usage
 
