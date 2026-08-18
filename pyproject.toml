@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Standalone GUI for applying randomprime patcher JSON to a Metroid Prime ISO"
 readme = "README.md"
 # The sole Python version declaration: uv resolves the interpreter from it.
-requires-python = ">=3.13"
+requires-python = "==3.13.*"
 dependencies = [
     "py-randomprime",
 ]
