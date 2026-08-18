@@ -43,4 +43,4 @@ case "$(uname -s)" in
 esac
 
 install_uv
-uv_sh self update -q || true
+uv_sh self update -q >/dev/null 2>&1 || true
