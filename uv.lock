@@ -197,14 +197,14 @@ wheels = [
 
 [[package]]
 name = "py-randomprime"
-version = "1.32.0"
+version = "1.33.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/09/bc/0c06af85de9fa22925b0ee73881c02e24b96fea0d475199376fe22b3110a/py_randomprime-1.32.0.tar.gz", hash = "sha256:2fbfcc6b883d2c1d76afe2b90bc2b7fdc4af3f19232d03c5f1084d45ba9260e6", size = 11018117, upload-time = "2026-07-23T22:48:45.364Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/17/7d/ca88bcc693275b4f496abd03b06996306d5e881b100353d38e1e10877b2c/py_randomprime-1.33.1.tar.gz", hash = "sha256:6adacfb39fab4560526dd4160387f908cca865eb583bd64954fb654cc4c306ca", size = 11036802, upload-time = "2026-08-14T23:08:19.49Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/13/3b/4a1855b055f03c577021099bb878b59a91f10c08711573aacb7677b55258/py_randomprime-1.32.0-cp310-abi3-macosx_10_12_x86_64.whl", hash = "sha256:7149583338d65b67e855be16db67633e4ec934e4fed2de1f72bf7c4d2c1a2afc", size = 3607536, upload-time = "2026-07-23T22:48:38.517Z" },
-    { url = "https://files.pythonhosted.org/packages/21/d5/2974339511fbeb43e4f70a694c84e13b7bdf02e393d4eaa1beb6b220ecf0/py_randomprime-1.32.0-cp310-abi3-macosx_11_0_arm64.whl", hash = "sha256:66c84ac30b247df069e7ddc8a9fdfe5067772b8a7a76ed8e1160f9f3d4567778", size = 3542301, upload-time = "2026-07-23T22:48:40.344Z" },
-    { url = "https://files.pythonhosted.org/packages/26/37/dceb1c73bf61794b147baa2ef2c81348905c304f34ee264508d198448dd4/py_randomprime-1.32.0-cp310-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:7a5ef952dcfbeb404fb9bdd8b52a8153ebeabcc344a4a8d6d1bb25ecd356f996", size = 3875148, upload-time = "2026-07-23T22:48:41.943Z" },
-    { url = "https://files.pythonhosted.org/packages/12/af/1bf79ac436ff9504d4691e5fa6339a56aa72ef9034c778fd3faa020999b9/py_randomprime-1.32.0-cp310-abi3-win_amd64.whl", hash = "sha256:718cfec935b62d446000ebaea09ba99b5e020b4ef1798060ecb23175458f9abc", size = 3331541, upload-time = "2026-07-23T22:48:43.641Z" },
+    { url = "https://files.pythonhosted.org/packages/66/0c/834f94558ddb107c462381190fb87342be949a52c71b598878cc0160256d/py_randomprime-1.33.1-cp310-abi3-macosx_10_12_x86_64.whl", hash = "sha256:7de3fbfbf5b68c768e7c61ad2731ae89b24cfb27f89681442b77d483c654aa76", size = 3803948, upload-time = "2026-08-14T23:08:12.378Z" },
+    { url = "https://files.pythonhosted.org/packages/ab/db/145acbb57a54c7b074248c4fe311d6f4e0aa67b00be297393c081e7f3eb1/py_randomprime-1.33.1-cp310-abi3-macosx_11_0_arm64.whl", hash = "sha256:7440b61561e3b03f81105538b3f9ba6cbff97f0423fdb418fbc1ff9622491e1c", size = 3717626, upload-time = "2026-08-14T23:08:14.131Z" },
+    { url = "https://files.pythonhosted.org/packages/71/87/45524ca99af5f791c5a4e80a97e4802b62adaa3b5c9ba708db4c97db0ada/py_randomprime-1.33.1-cp310-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:aabb89454f911adef661f36dda15a7f9257afab0d72b2a1e26b7102521de2378", size = 4082383, upload-time = "2026-08-14T23:08:15.886Z" },
+    { url = "https://files.pythonhosted.org/packages/52/8e/4f60a9f452a3df216053aad4fa61ad1ef8039de45bb8f35bc160f37c611d/py_randomprime-1.33.1-cp310-abi3-win_amd64.whl", hash = "sha256:9a56d0794551cf86293cfa1f7c81c99dfb366d567481371fd27ffb69d69b83bb", size = 3504426, upload-time = "2026-08-14T23:08:17.839Z" },
 ]
 
 [[package]]
