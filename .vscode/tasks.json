@@ -19,6 +19,18 @@
             "problemMatcher": []
         },
         {
+            "label": "lint",
+            "type": "shell",
+            "command": "make lint",
+            "problemMatcher": []
+        },
+        {
+            "label": "format",
+            "type": "shell",
+            "command": "make format",
+            "problemMatcher": []
+        },
+        {
             "label": "upgrade",
             "type": "shell",
             "command": "make upgrade",

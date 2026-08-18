@@ -1,4 +1,4 @@
-.PHONY: install run test upgrade release publish clean
+.PHONY: install run test lint format upgrade release publish clean
 .DEFAULT_GOAL := run
 
 ifeq ($(OS),Windows_NT)
@@ -16,10 +16,7 @@ else
 endif
 .SHELLFLAGS := -euo pipefail -c
 
-# install.sh puts uv on PATH; here we only keep its venv and bytecode cache
-# inside build/ without exporting those globally.
-UV_ENV := UV_PROJECT_ENVIRONMENT=build/.venv PYTHONPYCACHEPREFIX=build/pycache
-UV := $(UV_ENV) uv
+UV := ./tools/uv.sh
 UV_RUN := $(UV) run --locked
 
 install:
@@ -28,18 +25,27 @@ install:
 run: install
 	@$(UV_RUN) randomprime
 
-test: install
+lint: install
+	@$(UV_RUN) ruff check
+	@$(UV_RUN) ruff format --check
+	@$(UV_RUN) ty check
+
+test: install lint
 	@$(UV_RUN) pytest
+
+format: install
+	@$(UV_RUN) ruff check --fix
+	@$(UV_RUN) ruff format
 
 upgrade: install
 	@$(UV) lock --upgrade
 
 release: install
-	@$(UV_ENV) tools/release.sh
+	@./tools/release.sh
 
 publish: install
-	@$(UV_ENV) uv build --out-dir build/pypi
-	@$(UV_ENV) uv publish build/pypi/*
+	@$(UV) build --out-dir build/pypi
+	@$(UV) publish build/pypi/*
 
 clean:
 	@rm -rf build

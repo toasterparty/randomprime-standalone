@@ -26,6 +26,8 @@ On Linux/macOS, confirm `make` is installed (it usually is).
 | ------- | ----------- |
 | `make run` | Run the app from source |
 | `make test` | Run unit tests (`test/`) |
+| `make lint` | Check formatting, lint, and types |
+| `make format` | Auto-format and fix lint |
 | `make upgrade` | Upgrade locked dependencies |
 | `make release` | Build the standalone executable into `build/dist/` |
 | `make publish` | Build and publish the PyPI package (CI only) |

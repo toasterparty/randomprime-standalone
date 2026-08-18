@@ -9,7 +9,7 @@ from tkinter import filedialog, messagebox, ttk
 
 import py_randomprime
 
-from . import VERSION, dialogs
+from . import PRODUCT_NAME, VERSION, dialogs
 from .config import AppConfig, from_mapping, load_config, save_config
 from .patcher import KNOWN_ISO_SHA1S, build_patch_config, launch_dolphin, output_iso_path, sha1_of
 
@@ -19,7 +19,8 @@ _ABOUT = (
     "Utility for generating patched Metroid Prime (GC) ISOs from a"
     f" Randomprime v{py_randomprime.__version__} JSON patcher file."
 )
-_PAD = {"padx": 4, "pady": 4}
+_PAD_X = 4
+_PAD_Y = 4
 
 
 def _version_suffix() -> str:
@@ -32,7 +33,7 @@ class App:
         self.patching = False
         self.variables = self._create_variables(load_config())
 
-        root.title("Randomprime Standalone" + _version_suffix())
+        root.title(PRODUCT_NAME + _version_suffix())
         root.resizable(False, False)
         self._set_window_icon()
         self._build_ui()
@@ -91,11 +92,15 @@ class App:
             ("Dolphin (optional)", "dolphin_path", self._browse_dolphin),
         )
         for row, (label, name, browse) in enumerate(rows):
-            ttk.Label(files, text=label).grid(row=row, column=0, sticky="w", **_PAD)
-            ttk.Entry(files, textvariable=self.variables[name], width=60).grid(
-                row=row, column=1, sticky="ew", **_PAD
+            ttk.Label(files, text=label).grid(
+                row=row, column=0, sticky="w", padx=_PAD_X, pady=_PAD_Y
             )
-            ttk.Button(files, text="Browse...", command=browse).grid(row=row, column=2, **_PAD)
+            ttk.Entry(files, textvariable=self.variables[name], width=60).grid(
+                row=row, column=1, sticky="ew", padx=_PAD_X, pady=_PAD_Y
+            )
+            ttk.Button(files, text="Browse...", command=browse).grid(
+                row=row, column=2, padx=_PAD_X, pady=_PAD_Y
+            )
 
         preferences = ttk.LabelFrame(body, text="Preferences", padding=8)
         preferences.pack(fill="x", pady=8)
@@ -107,7 +112,7 @@ class App:
         )
         for index, (label, name) in enumerate(checks):
             ttk.Checkbutton(preferences, text=label, variable=self.variables[name]).grid(
-                row=index // 2, column=index % 2, sticky="w", **_PAD
+                row=index // 2, column=index % 2, sticky="w", padx=_PAD_X, pady=_PAD_Y
             )
 
         dialog_buttons = ttk.Frame(preferences)
@@ -118,7 +123,9 @@ class App:
             ("Cheats", lambda: dialogs.open_cheats(self.root, self.variables)),
         )
         for label, command in openers:
-            ttk.Button(dialog_buttons, text=label, command=command).pack(side="left", **_PAD)
+            ttk.Button(dialog_buttons, text=label, command=command).pack(
+                side="left", padx=_PAD_X, pady=_PAD_Y
+            )
 
         self.patch_button = ttk.Button(body, text="Patch", command=self._start_patch)
         self.patch_button.pack(fill="x", pady=(4, 4), ipady=4)
@@ -215,7 +222,7 @@ class App:
             output_iso.parent.mkdir(parents=True, exist_ok=True)
             notifier = py_randomprime.ProgressNotifier(self._post_progress)
             py_randomprime.patch_iso(Path(config.input_iso), output_iso, patch_config, notifier)
-        except Exception:
+        except Exception:  # noqa: BLE001
             if output_iso is not None:
                 with contextlib.suppress(OSError):
                     output_iso.unlink(missing_ok=True)

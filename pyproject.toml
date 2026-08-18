@@ -7,6 +7,7 @@ name = "randomprime-standalone"
 version = "0.1.0"
 description = "Standalone GUI for applying randomprime patcher JSON to a Metroid Prime ISO"
 readme = "README.md"
+# The sole Python version declaration: uv resolves the interpreter from it.
 requires-python = ">=3.13"
 dependencies = [
     "py-randomprime",
@@ -24,11 +25,24 @@ dev = [
     "pytest",
     "pytest-xdist",
     "imageio",
+    "ruff",
+    "ty",
 ]
+
+[tool.ruff]
+line-length = 100
+cache-dir = "build/.ruff_cache"
+
+[tool.ruff.lint]
+extend-select = ["I"]  # Sort imports.
+
+[tool.mypy]
+cache_dir = "build/.mypy_cache"
 
 [tool.pytest.ini_options]
 testpaths = ["test"]
-addopts = "-n auto"
+cache_dir = "build/.pytest_cache"
+addopts = ["-n", "auto"]
 
 [tool.setuptools.packages.find]
 include = ["randomprime_standalone*"]

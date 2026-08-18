@@ -8,15 +8,17 @@ from .config import AppConfig, cache_dir
 
 __all__ = ["KNOWN_ISO_SHA1S", "build_patch_config", "launch_dolphin", "output_iso_path", "sha1_of"]
 
-KNOWN_ISO_SHA1S = frozenset({
-    "ac20c744db18fdf0339f37945e880708fd317231",  # NTSC 0-00
-    "4ba8933499e0b74b2f6006d622e4fbc7593ab3c7",  # NTSC 0-01
-    "1a737910b55b59c6ad91be9e3e3c43517fd52efb",  # NTSC 0-02
-    "34ac8a764a3c1db3326c39071cee2fc49e730aca",  # PAL
-    "ee6c58b46012ebffb615506ec43e02ba71905662",  # Japan
-    "15926341f62a24ab3f3f897c0cf767795d2251fd",  # Korean (Source: redump.org)
-    "7e1e8d11c9ee50dcb4d71ae020e73b810a67d356",  # NTSC 0-00 + Prime Practice Mod v1.2.5
-})
+KNOWN_ISO_SHA1S = frozenset(
+    {
+        "ac20c744db18fdf0339f37945e880708fd317231",  # NTSC 0-00
+        "4ba8933499e0b74b2f6006d622e4fbc7593ab3c7",  # NTSC 0-01
+        "1a737910b55b59c6ad91be9e3e3c43517fd52efb",  # NTSC 0-02
+        "34ac8a764a3c1db3326c39071cee2fc49e730aca",  # PAL
+        "ee6c58b46012ebffb615506ec43e02ba71905662",  # Japan
+        "15926341f62a24ab3f3f897c0cf767795d2251fd",  # Korean (Source: redump.org)
+        "7e1e8d11c9ee50dcb4d71ae020e73b810a67d356",  # NTSC 0-00 + Prime Practice Mod v1.2.5
+    }
+)
 
 _ALL_ITEMS = {
     "combatVisor": True,
@@ -55,7 +57,7 @@ _ALL_ITEMS = {
 
 
 def _hex_to_unit_rgb(color: str) -> list[float]:
-    return [int(color[index:index + 2], 16) / 255 for index in (1, 3, 5)]
+    return [int(color[index : index + 2], 16) / 255 for index in (1, 3, 5)]
 
 
 def sha1_of(path: Path, on_progress: Callable[[float], None]) -> str:

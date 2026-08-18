@@ -3,6 +3,7 @@ import contextlib
 import tkinter as tk
 from collections.abc import Mapping
 from tkinter import colorchooser, ttk
+from typing import cast
 
 from .config import SoundMode
 from .rooms import STARTING_ROOMS
@@ -25,7 +26,7 @@ _SUIT_PREVIEW_COLORS = {
 }
 
 
-def _dialog(parent: tk.Misc, title: str) -> ttk.Frame:
+def _dialog(parent: tk.Tk, title: str) -> ttk.Frame:
     window = tk.Toplevel(parent)
     window.title(title)
     window.transient(parent)
@@ -56,7 +57,7 @@ def _scale(parent: tk.Misc, label: str, variable: tk.Variable, low: int, high: i
     row.pack(fill="x")
     ttk.Label(row, text=label, width=18).pack(side="left")
     tk.Scale(
-        row, variable=variable, from_=low, to=high, orient="horizontal", length=240
+        row, variable=cast(tk.IntVar, variable), from_=low, to=high, orient="horizontal", length=240
     ).pack(side="left", fill="x", expand=True)
 
 
@@ -76,12 +77,15 @@ def _set_enabled(widget: tk.Misc, enabled: bool) -> None:
         if enabled and isinstance(child, ttk.Combobox):
             state = "readonly"
         with contextlib.suppress(tk.TclError):
-            child.configure(state=state)
+            child.configure({"state": state})
         _set_enabled(child, enabled)
 
 
 def _suit_row(
-    parent: tk.Misc, label: str, variable: tk.Variable, base_colors: tuple[tuple[int, int, int], ...]
+    parent: tk.Misc,
+    label: str,
+    variable: tk.Variable,
+    base_colors: tuple[tuple[int, int, int], ...],
 ) -> None:
     row = ttk.Frame(parent)
     row.pack(fill="x", pady=2)
@@ -90,18 +94,24 @@ def _suit_row(
     for square in squares:
         square.pack(side="left", padx=1)
 
-    def repaint(value: object) -> None:
+    def repaint(value: str) -> None:
         degrees = int(float(value))
         for square, color in zip(squares, base_colors):
             square.configure(background=_to_hex(_rotate_hue(color, degrees)))
 
     tk.Scale(
-        row, variable=variable, from_=0, to=359, orient="horizontal", length=160, command=repaint
+        row,
+        variable=cast(tk.IntVar, variable),
+        from_=0,
+        to=359,
+        orient="horizontal",
+        length=160,
+        command=repaint,
     ).pack(side="left", fill="x", expand=True, padx=(8, 0))
     repaint(variable.get())
 
 
-def open_game_options(parent: tk.Misc, variables: Mapping[str, tk.Variable]) -> None:
+def open_game_options(parent: tk.Tk, variables: Mapping[str, tk.Variable]) -> None:
     body = _dialog(parent, "Game Options")
 
     override = variables["override_game_options"]
@@ -153,7 +163,7 @@ def open_game_options(parent: tk.Misc, variables: Mapping[str, tk.Variable]) -> 
     _close_button(body)
 
 
-def open_cosmetics(parent: tk.Misc, variables: Mapping[str, tk.Variable]) -> None:
+def open_cosmetics(parent: tk.Tk, variables: Mapping[str, tk.Variable]) -> None:
     body = _dialog(parent, "Cosmetics")
 
     override = variables["override_cosmetics"]
@@ -197,7 +207,7 @@ def open_cosmetics(parent: tk.Misc, variables: Mapping[str, tk.Variable]) -> Non
     _close_button(body)
 
 
-def open_cheats(parent: tk.Misc, variables: Mapping[str, tk.Variable]) -> None:
+def open_cheats(parent: tk.Tk, variables: Mapping[str, tk.Variable]) -> None:
     body = _dialog(parent, "Cheats")
 
     cheats = _group(body, "Cheats")
@@ -227,7 +237,7 @@ def open_cheats(parent: tk.Misc, variables: Mapping[str, tk.Variable]) -> None:
     _close_button(body)
 
 
-def show_error(parent: tk.Misc, title: str, message: str) -> None:
+def show_error(parent: tk.Tk, title: str, message: str) -> None:
     window = tk.Toplevel(parent)
     window.title(title)
     window.transient(parent)

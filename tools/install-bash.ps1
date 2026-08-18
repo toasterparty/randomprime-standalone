@@ -1,17 +1,23 @@
+# Ensure Git bash and GNU make are available, refreshing them to the latest
+# version when already installed. -IfMissing leaves what is already installed
+# alone, so CI (whose runners ship Git) skips the winget round-trip.
+param([switch]$IfMissing)
+
 $ErrorActionPreference = "Stop"
 
-function Install-Latest($id) {
-    winget list --id $id -e --source winget *> $null
-    $verb = if ($LASTEXITCODE -eq 0) { "upgrade" } else { "install" }
-    winget $verb --id $id -e --source winget --disable-interactivity `
+function Install-Latest($id, $probe) {
+    if ($IfMissing -and (& $probe)) { return }
+
+    # `winget install` upgrades a package that is already present, and exits
+    # non-zero when it is already current; neither is an error here.
+    winget install --id $id -e --source winget --disable-interactivity `
         --accept-package-agreements --accept-source-agreements 2>&1 |
-        Where-Object { $_ -notmatch "No available upgrade found|No newer package versions are available" }
-    # winget upgrade exits non-zero when already current; that is not an error.
+        Where-Object { $_ -notmatch "No available upgrade found|No newer package versions are available|Found an existing package already installed" }
     $global:LASTEXITCODE = 0
 }
 
-Install-Latest "Git.Git"
-Install-Latest "ezwinports.make"
+Install-Latest "Git.Git" { [bool](& "$PSScriptRoot\find-bash.ps1") }
+Install-Latest "ezwinports.make" { [bool](Get-Command make.exe -ErrorAction SilentlyContinue) }
 
 $bash = & "$PSScriptRoot\find-bash.ps1"
 
@@ -20,15 +26,15 @@ if (-not $bash -or -not (Test-Path $bash)) {
 }
 
 $bashDir = Split-Path $bash
-
-# Persist for future terminals.
 $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+
+# Persist on PATH for future shell instances...
 if (($userPath -split ";") -notcontains $bashDir) {
-    $newPath = if ($userPath) { "$bashDir;$userPath" } else { $bashDir }
-    [Environment]::SetEnvironmentVariable("Path", $newPath, "User")
+    $userPath = if ($userPath) { "$bashDir;$userPath" } else { $bashDir }
+    [Environment]::SetEnvironmentVariable("Path", $userPath, "User")
 }
 
-# Make bash usable in this shell right now, without a restart.
-if (($env:Path -split ";") -notcontains $bashDir) {
-    $env:Path = "$bashDir;$env:Path"
-}
+# ...and in this shell now, without a restart. Prepended so it wins over the
+# System32 bash.exe that launches WSL.
+$env:Path = $bashDir + ";" +
+    [Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + $userPath
