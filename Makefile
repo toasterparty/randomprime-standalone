@@ -19,8 +19,13 @@ endif
 UV := ./tools/uv.sh
 UV_RUN := $(UV) run --locked
 
-install:
+INSTALL_STAMP := build/.install-stamp
+
+$(INSTALL_STAMP): uv.lock pyproject.toml tools/install.sh
 	@./tools/install.sh
+	@mkdir -p $(@D) && touch $@
+
+install: $(INSTALL_STAMP)
 
 run: install
 	@$(UV_RUN) randomprime
@@ -38,6 +43,7 @@ format: install
 	@$(UV_RUN) ruff format
 
 upgrade: install
+	@./tools/install.sh --update
 	@$(UV) lock --upgrade
 
 release: install

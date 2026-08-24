@@ -67,7 +67,7 @@ jobs:
       - name: Build release
         shell: pwsh
         run: |
-          if ($IsWindows) { ./tools/install-bash.ps1 -IfMissing }
+          if ($IsWindows) { ./tools/install-bash.ps1 }
           make release
       - uses: actions/upload-artifact@v7
         with:

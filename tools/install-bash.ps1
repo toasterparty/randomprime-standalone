@@ -1,14 +1,13 @@
-# Ensure Git bash and GNU make are available, refreshing them to the latest
-# version when already installed. -IfMissing leaves what is already installed
-# alone, so CI (whose runners ship Git) skips the winget round-trip.
-param([switch]$IfMissing)
+# Ensure Git bash and GNU make are available, then put bash on PATH.
+# Specify -Update to update existing installs to latest
+param([switch]$Update)
 
 $ErrorActionPreference = "Stop"
 
-function Install-Latest($id, $probe) {
-    if ($IfMissing -and (& $probe)) { return }
+function Install-Tool($id, $probe) {
+    if (-not $Update -and (& $probe)) { return }
 
-    # `winget install` upgrades a package that is already present, and exits
+    # `winget install` updates a package that is already present, and exits
     # non-zero when it is already current; neither is an error here.
     winget install --id $id -e --source winget --disable-interactivity `
         --accept-package-agreements --accept-source-agreements 2>&1 |
@@ -16,8 +15,8 @@ function Install-Latest($id, $probe) {
     $global:LASTEXITCODE = 0
 }
 
-Install-Latest "Git.Git" { [bool](& "$PSScriptRoot\find-bash.ps1") }
-Install-Latest "ezwinports.make" { [bool](Get-Command make.exe -ErrorAction SilentlyContinue) }
+Install-Tool "Git.Git" { [bool](& "$PSScriptRoot\find-bash.ps1") }
+Install-Tool "ezwinports.make" { [bool](Get-Command make.exe -ErrorAction SilentlyContinue) }
 
 $bash = & "$PSScriptRoot\find-bash.ps1"
 
